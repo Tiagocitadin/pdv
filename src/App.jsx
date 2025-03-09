@@ -1,30 +1,48 @@
 import React, { useState } from "react";
-import ProdutoForm from "./componentes/ProdutoForm"; // Importando o componente ProdutoForm
 import './App.css';
+import Home from "./componentes/home";
 
 const App = () => {
-  const [mensagemSucesso, setMensagemSucesso] = useState(""); // Estado para mensagem de sucesso
+  const [produtos, setProdutos] = useState([]);
+  const [mensagemSucesso, setMensagemSucesso] = useState("");
+  const [produtoEditado, setProdutoEditado] = useState(null);
 
-  // Função chamada quando um novo produto é adicionado
+  // Função para adicionar produto
   const handleAddProduct = (produtoAdicionado) => {
-    // Aqui você pode fazer algo com o produto, como exibir uma mensagem de sucesso
+    setProdutos([...produtos, { ...produtoAdicionado, id: Date.now() }]);
     setMensagemSucesso("Produto cadastrado com sucesso!");
-    setTimeout(() => setMensagemSucesso(""), 3000); // Mensagem desaparece após 3 segundos
+    setTimeout(() => setMensagemSucesso(""), 3000);
+  };
+
+  // Função para editar produto
+  const handleEditProduct = (produtoAlterado) => {
+    const produtosAtualizados = produtos.map((produto) =>
+      produto.id === produtoAlterado.id ? produtoAlterado : produto
+    );
+    setProdutos(produtosAtualizados);
+    setMensagemSucesso("Produto alterado com sucesso!");
+    setTimeout(() => setMensagemSucesso(""), 3000);
+  };
+
+  // Função para excluir produto
+  const handleDeleteProduct = (id) => {
+    setProdutos(produtos.filter((produto) => produto.id !== id));
+    setMensagemSucesso("Produto excluído com sucesso!");
+    setTimeout(() => setMensagemSucesso(""), 3000);
   };
 
   return (
     <div className="app-container">
-      <h1>Cadastro de Produtos</h1>
-
-      {/* Componente de Formulário */}
-      <ProdutoForm onAddProduct={handleAddProduct} />
-
-      {/* Mensagem de Sucesso */}
-      {mensagemSucesso && (
-        <div className="feedback-message success">
-          {mensagemSucesso}
-        </div>
-      )}
+      {/* Exibindo a Home como página principal */}
+      <Home
+        produtos={produtos}
+        onEditProduct={handleEditProduct}
+        onDeleteProduct={handleDeleteProduct}
+        onAddProduct={handleAddProduct} // Passando a função de adicionar produto
+      />
+      
+      {/* Exibindo mensagem de sucesso */}
+      {mensagemSucesso && <div className="success-message">{mensagemSucesso}</div>}
     </div>
   );
 };
